@@ -1,0 +1,3 @@
+@echo off
+echo Starting ResQ-AI Emergency Health Assistant...
+start index.html

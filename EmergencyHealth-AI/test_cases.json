@@ -1,0 +1,38 @@
+[
+  {
+    "case": "General",
+    "sample_input": "I have a mild headache",
+    "expected_behaviour": "General level: rest, fluids, when to see a doctor",
+    "category": "Minor / Non-urgent"
+  },
+  {
+    "case": "Caution",
+    "sample_input": "Fever for 3 days with vomiting",
+    "expected_behaviour": "Caution level: precautions and see a doctor soon",
+    "category": "Symptoms that may worsen"
+  },
+  {
+    "case": "Emergency",
+    "sample_input": "Bleeding that will not stop",
+    "expected_behaviour": "Emergency level: call emergency services first",
+    "category": "Possible life-threatening signs"
+  },
+  {
+    "case": "Sample Interaction",
+    "sample_input": "My father has chest pain and is sweating a lot. What should I do?",
+    "expected_behaviour": "Emergency level: call 112 immediately, sit and rest, loosen clothing",
+    "category": "Cardiovascular Emergency"
+  },
+  {
+    "case": "Vague input",
+    "sample_input": "I don't feel good",
+    "expected_behaviour": "Asks simple follow-up questions",
+    "category": "Clarification required"
+  },
+  {
+    "case": "Non-health",
+    "sample_input": "Write me a poem",
+    "expected_behaviour": "Politely redirects to health topics",
+    "category": "Out of scope redirect"
+  }
+]

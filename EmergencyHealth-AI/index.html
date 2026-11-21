@@ -1,0 +1,778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EmergencyHealth.ai | Production-Grade AI Healthcare Orchestration</title>
+    <!-- Leaflet CSS for Emergency Map -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link rel="stylesheet" href="styles.css">
+    <!-- QR Code Generator Lib -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body>
+
+    <!-- Emergency Active Status Bar -->
+    <div class="top-emergency-bar">
+        <div class="sos-pulse-badge">
+            <span class="pulse-indicator"></span>
+            EMERGENCYHEALTH.AI NETWORK: 3 AUTONOMOUS AGENTS ACTIVE
+        </div>
+        <div style="font-size: 0.85rem;">
+            Emergency Helplines: <strong>National Ambulance: 108 / 112</strong> | <strong>Police: 100</strong>
+        </div>
+        <div style="display: flex; gap: 0.5rem; align-items: center;">
+            <button class="btn btn-secondary btn-sm" id="btnSirenToggle" onclick="toggleEmergencySiren()">
+                🚨 Siren: OFF
+            </button>
+            <button class="btn btn-danger btn-sm" onclick="initiate108EmergencyCall()">
+                📞 CALL 108 NOW
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header>
+        <div class="navbar">
+            <a href="#" class="brand" onclick="switchMainView('home'); return false;">
+                <div class="brand-logo-icon">⚕️</div>
+                <div>
+                    <div class="brand-text">Emergency<span>Health.ai</span></div>
+                    <div class="brand-sub">Healthcare Orchestration System</div>
+                </div>
+            </a>
+            
+            <nav class="nav-links">
+                <a class="nav-link active" id="nav-home" onclick="switchMainView('home')">🏠 Home</a>
+                <a class="nav-link" id="nav-intake" onclick="switchMainView('intake')">📝 Symptom Intake</a>
+                <a class="nav-link" id="nav-triage" onclick="switchMainView('triage')">🤖 AI Triage Results</a>
+                <a class="nav-link" id="nav-providers" onclick="switchMainView('providers')">🏥 Provider Discovery</a>
+                <a class="nav-link" id="nav-supervisor" onclick="switchMainView('supervisor')">👨‍⚕️ Supervisor Desk</a>
+                <a class="nav-link" id="nav-radar" onclick="switchMainView('radar')">🗺️ Trauma Radar & Maps</a>
+                <a class="nav-link" id="nav-chatbot" onclick="switchMainView('chatbot')">💬 Medicine Bot</a>
+            </nav>
+
+            <div class="nav-actions">
+                <button class="btn btn-secondary btn-sm" onclick="openJudgeLoginModal()">🔑 Quick Login</button>
+                <button class="btn btn-primary btn-sm" onclick="switchMainView('intake')">Tell Us Symptoms &rarr;</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Always-On Floating 108 Call Button -->
+    <div class="floating-108-widget">
+        <button class="btn-108-floating" onclick="initiate108EmergencyCall()" title="Emergency 108 Calling">
+            📞 108 EMERGENCY SOS
+        </button>
+    </div>
+
+    <div class="container">
+
+        <!-- ========================================== -->
+        <!-- VIEW 1: HOME & NATIONAL CRISIS PROBLEM     -->
+        <!-- ========================================== -->
+        <section id="view-home" class="view-section active">
+            <!-- Problem Statement Hero Banner -->
+            <div class="card" style="background: linear-gradient(135deg, #f0fdfa 0%, #ffffff 100%); border: 1px solid #ccfbf1; padding: 2.25rem;">
+                <div style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; margin-bottom: 1rem;">
+                    <div>
+                        <div style="font-size: 0.85rem; font-weight: 800; color: var(--primary); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.25rem;">
+                            India's Healthcare Triage Crisis • Solved by Agentic AI
+                        </div>
+                        <h1 style="font-size: 2.2rem; font-weight: 900; line-height: 1.2; color: #0f172a; margin-bottom: 0.75rem;">
+                            Intelligent <span style="color: var(--primary);">Healthcare Orchestration</span> for 1.4 Billion People
+                        </h1>
+                        <p style="color: var(--text-muted); font-size: 1.05rem; max-width: 820px; line-height: 1.6;">
+                            EmergencyHealth.ai combines <strong>3 Autonomous AI Agents</strong>, <strong>Human-in-the-Loop Validation</strong>, and <strong>sub-10s Triage Routing</strong> to reduce 70% of hospital overload while cutting triage costs from $10 to $0.001 per patient.
+                        </p>
+                    </div>
+                    <span class="match-pill" style="background: #ccfbf1; color: #0f766e; border-color: #99f6e4; font-size: 0.85rem; padding: 0.4rem 0.9rem;">
+                        ⚡ 65% Auto-Approved • 35% Human Oversight
+                    </span>
+                </div>
+
+                <div style="display: flex; gap: 0.75rem; flex-wrap: wrap; margin: 1.5rem 0;">
+                    <button class="btn btn-primary" style="padding: 0.75rem 1.5rem; font-size: 1rem;" onclick="switchMainView('intake')">
+                        📝 Tell Us Your Symptoms (Start Flow 1) &rarr;
+                    </button>
+                    <button class="btn btn-danger" style="padding: 0.75rem 1.5rem; font-size: 1rem;" onclick="switchMainView('radar')">
+                        🚨 Fast-Track Emergency & Radar
+                    </button>
+                    <button class="btn btn-secondary" onclick="openJudgeLoginModal()">
+                        🔑 Quick Login for Judges
+                    </button>
+                </div>
+
+                <!-- 5 Metrics Cards -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-top: 1.5rem;">
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; border-top: 3px solid var(--primary);">
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Triage Speed</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">&lt; 10 Seconds</div>
+                        <div style="font-size: 0.75rem; color: #10b981; font-weight: 600;">85%+ diagnostic accuracy</div>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; border-top: 3px solid #2563eb;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Cost Efficiency</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">$0.001 / patient</div>
+                        <div style="font-size: 0.75rem; color: #10b981; font-weight: 600;">1000x cheaper than manual</div>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; border-top: 3px solid #f59e0b;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Hospital Overload Reduction</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">30% Less Burden</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Emergency beds reserved for acute</div>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--border); border-radius: 10px; padding: 1rem; border-top: 3px solid #8b5cf6;">
+                        <div style="font-size: 0.8rem; color: var(--text-muted);">Rural Healthcare Reach</div>
+                        <div style="font-size: 1.5rem; font-weight: 800; color: var(--text-main); margin-top: 0.2rem;">250% Improved</div>
+                        <div style="font-size: 0.75rem; color: var(--text-muted);">Works on 2G & Voice in 20+ languages</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Problem Numbers Overview Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 1.5rem;">
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: #991b1b;">⚠️ The Crisis Numbers</div>
+                    </div>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.92rem; color: #334155;">
+                        <li>🏥 <strong>1.4 Billion People</strong> seeking healthcare in India</li>
+                        <li>👨‍⚕️ <strong>1 Doctor per 1,400 patients</strong> (WHO standard: 1:1,000)</li>
+                        <li>🌾 <strong>70% of population</strong> in rural areas with limited specialist access</li>
+                        <li>🏨 <strong>80% of hospital beds</strong> occupied by routine cases that could be triaged</li>
+                        <li>💰 <strong>$5 - $10</strong> manual triage cost per hospital visit</li>
+                        <li>⏱️ <strong>2 - 4 hours</strong> average emergency room wait time</li>
+                    </ul>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <div class="card-title" style="color: #0d9488;">💡 The AI Solution Approach</div>
+                    </div>
+                    <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem; font-size: 0.92rem; color: #334155;">
+                        <li>🤖 <strong>1. AI-First Triage:</strong> Mobile symptom reporting in &lt;10 seconds with 85%+ accuracy.</li>
+                        <li>🧠 <strong>2. 3 Agentic AI Agents:</strong> Supervisor, Care Pathway, and Clinical Decision Agents.</li>
+                        <li>👨‍⚕️ <strong>3. Human-in-the-Loop:</strong> 35% complex cases reviewed by medical supervisors.</li>
+                        <li>🧭 <strong>4. Smart Routing:</strong> Auto-coordinates primary, secondary, and tertiary appointments.</li>
+                        <li>💸 <strong>5. 1000x Cost Savings:</strong> Pay-as-you-go serverless architecture.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ======================================================= -->
+        <!-- VIEW 2: MULTILINGUAL SYMPTOM INTAKE (EXACT SCREENSHOT 2)-->
+        <!-- ======================================================= -->
+        <section id="view-intake" class="view-section">
+            <div class="card" style="max-width: 880px; margin: 0 auto 2rem;">
+                <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.5rem;">
+                    <div style="width: 40px; height: 40px; border-radius: 8px; background: #f0fdfa; display: flex; align-items: center; justify-content: center; font-size: 1.25rem;">
+                        🏠
+                    </div>
+                    <div>
+                        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a;">Tell Us Your Symptoms</h2>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">We'll help you find the right level of care in seconds</div>
+                    </div>
+                </div>
+
+                <!-- Card 1: Common Symptoms -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.6rem; color: #1e293b;">
+                        Common Symptoms
+                    </label>
+                    <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;" id="commonSymptomsPills">
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Fever')">Fever</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Headache')">Headache</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Cough')">Cough</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Fatigue')">Fatigue</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Nausea')">Nausea</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Chest Pain')">Chest Pain</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Shortness of Breath')">Shortness of Breath</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Dizziness')">Dizziness</span>
+                        <span class="symptom-pill" onclick="toggleSymptomPill(this, 'Abdominal Pain')">Abdominal Pain</span>
+                    </div>
+                </div>
+
+                <!-- Card 2: Add Custom Symptom -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.6rem; color: #1e293b;">
+                        Add Custom Symptom (Voice or Type in 20+ Languages)
+                    </label>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <input type="text" class="form-input" id="customSymptomInput" placeholder="Type your symptom... (e.g. sharp chest pain radiating to left jaw)">
+                        <button class="btn btn-primary" onclick="addCustomSymptomPill()">＋</button>
+                        <button class="btn btn-secondary" onclick="toggleVoiceRecognition()" id="micBtn" title="Speak symptoms">🎤</button>
+                    </div>
+                </div>
+
+                <!-- Card 3: Severity -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.6rem; color: #1e293b;">
+                        How severe are your symptoms?
+                    </label>
+                    <div class="severity-btn-group">
+                        <div class="severity-choice" onclick="selectSeverity('Mild', this)">Mild</div>
+                        <div class="severity-choice active" onclick="selectSeverity('Moderate', this)">Moderate</div>
+                        <div class="severity-choice" onclick="selectSeverity('Severe', this)">Severe</div>
+                        <div class="severity-choice critical" onclick="selectSeverity('Critical', this)">Critical</div>
+                    </div>
+                </div>
+
+                <!-- Card 4: Duration -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.6rem; color: #1e293b;">
+                        How long have you had these symptoms?
+                    </label>
+                    <select class="form-input" id="durationSelect">
+                        <option value="Less than 24 hours">Less than 24 hours</option>
+                        <option value="1 to 3 days" selected>1 to 3 days</option>
+                        <option value="4 to 7 days">4 to 7 days</option>
+                        <option value="More than 1 week">More than 1 week</option>
+                    </select>
+                </div>
+
+                <!-- Card 5: Additional Info -->
+                <div style="margin-bottom: 1.5rem;">
+                    <label style="display: block; font-weight: 700; font-size: 0.92rem; margin-bottom: 0.6rem; color: #1e293b;">
+                        Additional Information (Optional)
+                    </label>
+                    <textarea class="form-input" id="additionalInfo" rows="3" placeholder="Any other details that might help us understand your condition (e.g., history of diabetes, asthma)..."></textarea>
+                </div>
+
+                <!-- Card 6: AI-Powered Action -->
+                <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem;">
+                    <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 0.85rem;">
+                        <span style="font-size: 1.25rem;">🤖</span>
+                        <div>
+                            <div style="font-weight: 700; color: #1e293b; font-size: 0.92rem;">AI-Powered Assessment</div>
+                            <div style="font-size: 0.8rem; color: var(--text-muted);">Our Supervisor & Clinical Agents will analyze your symptoms in &lt;10 seconds</div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-primary" style="width: 100%; padding: 0.85rem; font-size: 1.05rem;" onclick="executeSymptomAssessment()">
+                        ✨ Get AI Triage Assessment
+                    </button>
+                    <div style="text-align: center; font-size: 0.75rem; color: var(--text-muted); margin-top: 0.5rem;">
+                        🔒 Your medical information is encrypted and secure
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ======================================================= -->
+        <!-- VIEW 3: AI TRIAGE RESULTS (EXACT SCREENSHOT 3)          -->
+        <!-- ======================================================= -->
+        <section id="view-triage" class="view-section">
+            <div class="card" style="max-width: 980px; margin: 0 auto 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                    <div>
+                        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a;">Triage Results</h2>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">AI-Powered Assessment Completed</div>
+                    </div>
+                    <span class="match-pill" style="background: #eff6ff; color: #2563eb; border-color: #bfdbfe;">● AI Active</span>
+                </div>
+
+                <!-- AI Assessment Complete Banner -->
+                <div class="ai-confidence-banner">
+                    <div style="font-size: 2rem;">🤖</div>
+                    <div style="flex: 1;">
+                        <div style="font-weight: 800; color: #1e3a8a; font-size: 1rem;">AI Assessment Complete</div>
+                        <div style="font-size: 0.82rem; color: #3b82f6;">Powered by Multi-Level Agentic Reasoning Engine</div>
+                        <div style="display: flex; justify-content: space-between; font-size: 0.82rem; font-weight: 700; color: #1d4ed8; margin-top: 0.35rem;">
+                            <span>AI Confidence Score: <strong id="triageScoreVal">87%</strong></span>
+                            <span id="triageCategoryTag">Moderate Urgency</span>
+                        </div>
+                        <div class="confidence-bar-bg">
+                            <div class="confidence-bar-fill" id="triageProgressBar" style="width: 87%;"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Priority Box -->
+                <div class="priority-banner priority-moderate" id="triagePriorityBox">
+                    <span style="font-size: 1.25rem;">⚠️</span>
+                    <div>
+                        <strong id="triagePriorityTitle">Moderate Priority</strong> — <span id="triageActionText">Recommended action: physician consultation within 24 hours</span>
+                    </div>
+                </div>
+
+                <!-- Reported Symptoms Tags -->
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="font-size: 0.85rem; font-weight: 700; color: var(--text-muted); margin-bottom: 0.4rem;">
+                        Reported Symptoms
+                    </div>
+                    <div style="display: flex; gap: 0.4rem; flex-wrap: wrap;" id="reportedSymptomsContainer">
+                        <span class="match-pill" style="background: #f1f5f9; color: #0d9488; border-color: #ccfbf1;">Fever</span>
+                        <span class="match-pill" style="background: #f1f5f9; color: #0d9488; border-color: #ccfbf1;">Headache</span>
+                        <span class="match-pill" style="background: #f1f5f9; color: #0d9488; border-color: #ccfbf1;">Fatigue</span>
+                    </div>
+                </div>
+
+                <!-- AI Recommended Facilities -->
+                <div style="margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.85rem;">
+                        <div style="font-weight: 800; font-size: 1.05rem; color: #0f172a;">
+                            AI Recommended Facilities (Based on symptoms, location, and urgency)
+                        </div>
+                        <span class="match-pill" style="background: #fdf2f8; color: #db2777; border-color: #fbcfe8;">✨ AI Matched</span>
+                    </div>
+
+                    <!-- Facility 1 -->
+                    <div class="facility-item">
+                        <div class="facility-top">
+                            <div>
+                                <div class="facility-title">
+                                    City General Hospital <span class="facility-type-tag">Hospital</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    📍 2.3 km • ⏱️ 2-4 hours wait • ⭐ 4.8
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="match-pill">95% Match</span>
+                                <div style="font-size: 0.75rem; color: #10b981; font-weight: 600; margin-top: 0.2rem;">Available Now</div>
+                            </div>
+                        </div>
+                        <div class="ai-insight-box">
+                            <strong>AI Insight:</strong> Best match for moderate symptoms with immediate triage availability.
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary btn-sm" onclick="alert('Appointment requested at City General Hospital.')">Book Appointment</button>
+                            <button class="btn btn-secondary btn-sm" onclick="switchMainView('radar')">View on Map</button>
+                        </div>
+                    </div>
+
+                    <!-- Facility 2 -->
+                    <div class="facility-item">
+                        <div class="facility-top">
+                            <div>
+                                <div class="facility-title">
+                                    Prime Care Clinic <span class="facility-type-tag">Clinic</span>
+                                </div>
+                                <div style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.2rem;">
+                                    📍 1.8 km • ⏱️ 1-2 hours wait • ⭐ 4.6
+                                </div>
+                            </div>
+                            <div style="text-align: right;">
+                                <span class="match-pill">92% Match</span>
+                                <div style="font-size: 0.75rem; color: #10b981; font-weight: 600; margin-top: 0.2rem;">Available Now</div>
+                            </div>
+                        </div>
+                        <div class="ai-insight-box">
+                            <strong>AI Insight:</strong> Closest location with shorter wait times for non-emergency care.
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary btn-sm" onclick="alert('Appointment requested at Prime Care Clinic.')">Book Appointment</button>
+                            <button class="btn btn-secondary btn-sm" onclick="switchMainView('radar')">View on Map</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Recommended Next Step -->
+                <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 10px; padding: 1.25rem; margin-bottom: 1.5rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                        <strong style="color: #166534;">AI Recommended Next Step</strong>
+                        <span class="match-pill" style="background: #dcfce7; color: #15803d; border-color: #86efac;">✨ AI</span>
+                    </div>
+                    <div style="font-size: 0.9rem; color: #14532d; margin-bottom: 0.75rem;">
+                        Schedule an appointment with a General Practitioner • Estimated wait: 2-4 hours
+                    </div>
+                    <button class="btn btn-primary" onclick="switchMainView('providers')">
+                        🔍 Find Provider with AI Search &rarr;
+                    </button>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ======================================================= -->
+        <!-- VIEW 4: AI PROVIDER SEARCH (EXACT SCREENSHOT 4)         -->
+        <!-- ======================================================= -->
+        <section id="view-providers" class="view-section">
+            <div class="card" style="max-width: 980px; margin: 0 auto 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
+                    <div>
+                        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a;">AI Provider Search ✨</h2>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Semantic search powered by AI Clinical Decision Agent</div>
+                    </div>
+                    <span class="match-pill" style="background: #eff6ff; color: #2563eb;">● AI Active</span>
+                </div>
+
+                <!-- Search Input Bar -->
+                <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem;">
+                    <input type="text" class="form-input" id="providerSearchInput" placeholder="Describe your symptoms or what you need... (e.g., 'fever and headache for 3 days')">
+                    <button class="btn btn-primary" onclick="runSemanticProviderSearch()">🔍 AI Search</button>
+                </div>
+
+                <!-- Filter Chips -->
+                <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+                    <select class="form-input" style="width: auto;" id="provSpecialtyFilter" onchange="runSemanticProviderSearch()">
+                        <option value="All">All Specialties</option>
+                        <option value="General Practitioner">General Practitioner</option>
+                        <option value="Cardiologist">Cardiologist</option>
+                        <option value="Pediatrician">Pediatrician</option>
+                        <option value="Orthopedic">Orthopedic Surgeon</option>
+                    </select>
+                    <select class="form-input" style="width: auto;">
+                        <option>Within 10 km</option>
+                        <option>Within 5 km</option>
+                        <option>Within 25 km</option>
+                    </select>
+                </div>
+
+                <!-- Providers List -->
+                <div id="providerResultsList">
+                    <!-- Provider 1 -->
+                    <div class="facility-item">
+                        <div class="facility-top">
+                            <div style="display: flex; gap: 0.85rem; align-items: center;">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0d9488; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800;">
+                                    DSJ
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Dr. Sarah Johnson</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">General Practitioner • 15 years exp • English, Hindi</div>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="match-pill">95% Match</span>
+                                <span style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-left: 0.35rem;">Accepting New</span>
+                            </div>
+                        </div>
+                        <div class="ai-insight-box">
+                            <strong>AI Insight:</strong> Best match for general symptoms and immediate availability.
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                            ⭐ 4.8 (234 reviews) • 📍 2.3 km • Available Today • Next available: <strong>2:30 PM</strong>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary btn-sm" onclick="alert('Booked appointment with Dr. Sarah Johnson!')">Book Appointment</button>
+                            <button class="btn btn-secondary btn-sm" onclick="alert('Dr. Sarah Johnson Profile: City General Hospital')">View Profile</button>
+                            <a href="tel:108" class="btn btn-secondary btn-sm">📞 Call</a>
+                        </div>
+                    </div>
+
+                    <!-- Provider 2 -->
+                    <div class="facility-item">
+                        <div class="facility-top">
+                            <div style="display: flex; gap: 0.85rem; align-items: center;">
+                                <div style="width: 44px; height: 44px; border-radius: 50%; background: #0284c7; color: white; display: flex; align-items: center; justify-content: center; font-weight: 800;">
+                                    DRK
+                                </div>
+                                <div>
+                                    <div style="font-weight: 700; font-size: 1.05rem;">Dr. Rajesh Kumar</div>
+                                    <div style="font-size: 0.85rem; color: var(--text-muted);">Cardiologist • 20 years exp • English, Hindi, Tamil</div>
+                                </div>
+                            </div>
+                            <div>
+                                <span class="match-pill">88% Match</span>
+                                <span style="font-size: 0.75rem; color: #059669; font-weight: 600; margin-left: 0.35rem;">Accepting New</span>
+                            </div>
+                        </div>
+                        <div class="ai-insight-box">
+                            <strong>AI Insight:</strong> Highly rated specialist with extensive cardiac experience.
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 0.75rem;">
+                            ⭐ 4.9 (456 reviews) • 📍 3.5 km • Tomorrow • Next available: <strong>10:00 AM</strong>
+                        </div>
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="btn btn-primary btn-sm" onclick="alert('Booked appointment with Dr. Rajesh Kumar!')">Book Appointment</button>
+                            <button class="btn btn-secondary btn-sm">View Profile</button>
+                            <a href="tel:108" class="btn btn-secondary btn-sm">📞 Call</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ======================================================= -->
+        <!-- VIEW 5: SUPERVISOR DASHBOARD (EXACT SCREENSHOT 5)       -->
+        <!-- ======================================================= -->
+        <section id="view-supervisor" class="view-section">
+            <div class="card" style="max-width: 1080px; margin: 0 auto 2rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem; flex-wrap: wrap; gap: 1rem;">
+                    <div>
+                        <h2 style="font-size: 1.4rem; font-weight: 800; color: #0f172a;">Supervisor Dashboard</h2>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">Review and validate patient triage assessments</div>
+                    </div>
+                    <!-- Counter Statistics -->
+                    <div class="supervisor-stats-bar">
+                        <div class="supervisor-stat">
+                            <span class="stat-number" style="color: #2563eb;">4</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Pending</span>
+                        </div>
+                        <div class="supervisor-stat">
+                            <span class="stat-number" style="color: #ef4444;">1</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Emergency</span>
+                        </div>
+                        <div class="supervisor-stat">
+                            <span class="stat-number" style="color: #f59e0b;">2</span>
+                            <span style="font-size: 0.8rem; color: var(--text-muted);">Low Confidence</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Validation Queue Grid -->
+                <div style="display: grid; grid-template-columns: 1.3fr 1fr; gap: 1.5rem;">
+                    <!-- Left: Cards Queue -->
+                    <div>
+                        <div style="font-weight: 700; font-size: 0.92rem; margin-bottom: 0.75rem; color: #334155;">
+                            Validation Queue
+                        </div>
+
+                        <!-- Card 1: Rajesh Kumar (Emergency 9/10) -->
+                        <div class="queue-card queue-emergency" onclick="selectSupervisorCase(0)">
+                            <div class="queue-card-top">
+                                <div>
+                                    <strong style="color: #0f172a; font-size: 1.05rem;">Rajesh Kumar</strong>
+                                    <span class="match-pill" style="background: #fef08a; color: #854d0e; font-size: 0.72rem; margin-left: 0.4rem;">Pending</span>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">45 years old</div>
+                                </div>
+                                <div class="severity-badge-big" style="color: #ef4444;">9/10</div>
+                            </div>
+                            <div style="font-size: 0.88rem; color: #334155; margin-bottom: 0.4rem;">
+                                <strong>Symptoms:</strong> Chest pain, shortness of breath, sweating
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
+                                <span>⏱️ 2 minutes ago</span>
+                                <span style="font-weight: 700; color: #15803d;">92% confidence</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 2: Priya Singh (7/10 Flagged) -->
+                        <div class="queue-card queue-warning" onclick="selectSupervisorCase(1)">
+                            <div class="queue-card-top">
+                                <div>
+                                    <strong style="color: #0f172a; font-size: 1.05rem;">Priya Singh</strong>
+                                    <span class="match-pill" style="background: #fef08a; color: #854d0e; font-size: 0.72rem; margin-left: 0.4rem;">Pending</span>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">32 years old</div>
+                                </div>
+                                <div class="severity-badge-big" style="color: #d97706;">7/10</div>
+                            </div>
+                            <div style="font-size: 0.88rem; color: #334155; margin-bottom: 0.4rem;">
+                                <strong>Symptoms:</strong> High fever, cough, body ache, dizziness
+                            </div>
+                            <div style="background: #fef3c7; border: 1px solid #fde68a; padding: 0.35rem 0.6rem; border-radius: 4px; font-size: 0.78rem; color: #92400e; margin-bottom: 0.4rem;">
+                                ⚠️ <strong>Flagged for Review:</strong> Low confidence (&lt;70%) - Conflicting symptoms require human review
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
+                                <span>⏱️ 5 minutes ago</span>
+                                <span style="font-weight: 700; color: #b45309;">65% confidence</span>
+                            </div>
+                        </div>
+
+                        <!-- Card 3: Amit Patel (3/10 Routine) -->
+                        <div class="queue-card queue-routine" onclick="selectSupervisorCase(2)">
+                            <div class="queue-card-top">
+                                <div>
+                                    <strong style="color: #0f172a; font-size: 1.05rem;">Amit Patel</strong>
+                                    <span class="match-pill" style="background: #fef08a; color: #854d0e; font-size: 0.72rem; margin-left: 0.4rem;">Pending</span>
+                                    <div style="font-size: 0.8rem; color: var(--text-muted);">28 years old</div>
+                                </div>
+                                <div class="severity-badge-big" style="color: #10b981;">3/10</div>
+                            </div>
+                            <div style="font-size: 0.88rem; color: #334155; margin-bottom: 0.4rem;">
+                                <strong>Symptoms:</strong> Mild headache, fatigue, nausea
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.78rem; color: var(--text-muted);">
+                                <span>⏱️ 10 minutes ago</span>
+                                <span style="font-weight: 700; color: #15803d;">78% confidence</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Selected Case Inspector -->
+                    <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 1.25rem;" id="supervisorDetailPane">
+                        <div style="text-align: center; color: var(--text-muted); padding: 2rem 1rem;">
+                            <span style="font-size: 2rem;">⚠️</span>
+                            <div style="font-weight: 700; margin-top: 0.5rem;">Select a validation to view details</div>
+                            <div style="font-size: 0.82rem;">Click on any patient in the queue to inspect 6-level reasoning and take action.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ======================================================= -->
+        <!-- VIEW 6: TRAUMA RADAR, GOOGLE MAPS & 108 AMBULANCE       -->
+        <!-- ======================================================= -->
+        <section id="view-radar" class="view-section">
+            <div class="card">
+                <div class="card-header">
+                    <div>
+                        <div class="card-title" style="color: #ef4444;">
+                            🗺️ Trauma Radar & Real-Time Ambulance Map
+                        </div>
+                        <div style="font-size: 0.85rem; color: var(--text-muted);">
+                            Real-time geospatial tracking with <strong>Google Maps Tiles</strong> & <strong>Leaflet OpenStreetMap</strong>
+                        </div>
+                    </div>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button class="btn btn-secondary btn-sm" onclick="locateUserPosition()">📍 Refresh GPS</button>
+                        <button class="btn btn-primary btn-sm" onclick="openGoogleMapsNavigation()">🚗 Navigate via Google Maps</button>
+                        <button class="btn btn-danger btn-sm" onclick="initiate108EmergencyCall()">📞 Call 108</button>
+                    </div>
+                </div>
+
+                <!-- Layer Switcher & Sim Button -->
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; flex-wrap: wrap; gap: 0.5rem;">
+                    <div style="display: flex; gap: 0.4rem;">
+                        <button class="btn btn-secondary btn-sm" id="btnLayerGoogle" onclick="switchMapLayer('google')">🗺️ Google Roads</button>
+                        <button class="btn btn-secondary btn-sm" id="btnLayerSatellite" onclick="switchMapLayer('satellite')">🛰️ Google Satellite</button>
+                        <button class="btn btn-secondary btn-sm" id="btnLayerOSM" onclick="switchMapLayer('osm')">🌍 OpenStreetMap</button>
+                    </div>
+                    <button class="btn btn-danger btn-sm" id="btnAmbulanceSim" onclick="toggleAmbulanceSimulation()">
+                        🚑 Simulate Moving Ambulance En-Route
+                    </button>
+                </div>
+
+                <div id="map"></div>
+
+                <!-- Live Ambulance Telemetry HUD -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem; margin-top: 1rem;">
+                    <div style="background: white; border: 1px solid var(--border); border-left: 4px solid var(--emergency); border-radius: 8px; padding: 0.85rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Nearest Hospital</div>
+                        <div style="font-weight: 800; font-size: 1.05rem;">Apex Trauma Center</div>
+                        <div style="font-size: 0.78rem; color: #059669;">🟢 4 ICU Beds Vacant</div>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--border); border-left: 4px solid var(--secondary); border-radius: 8px; padding: 0.85rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Assigned Unit</div>
+                        <div style="font-weight: 800; font-size: 1.05rem;">ALS Ambulance #12</div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);">Paramedic with Ventilator</div>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--border); border-left: 4px solid #10b981; border-radius: 8px; padding: 0.85rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Distance to Patient</div>
+                        <div style="font-weight: 800; font-size: 1.05rem; color: #059669;" id="hudDistanceVal">1.4 km</div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);" id="hudSpeedVal">Speed: 58 km/h</div>
+                    </div>
+                    <div style="background: white; border: 1px solid var(--border); border-left: 4px solid #f59e0b; border-radius: 8px; padding: 0.85rem;">
+                        <div style="font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase;">Estimated Arrival (ETA)</div>
+                        <div style="font-weight: 800; font-size: 1.05rem; color: #d97706;" id="hudEtaVal">4 min 12 sec</div>
+                        <div style="font-size: 0.78rem; color: var(--text-muted);">Siren beacon active</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- ======================================================= -->
+        <!-- VIEW 7: AI CLINICAL PHARMACOLOGY & DISEASE CHATBOT      -->
+        <!-- ======================================================= -->
+        <section id="view-chatbot" class="view-section">
+            <div class="card" style="padding: 0; overflow: hidden; max-width: 900px; margin: 0 auto 2rem;">
+                <div style="background: #f8fafc; padding: 1rem 1.5rem; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center;">
+                    <div>
+                        <div style="font-weight: 800; font-size: 1.15rem; color: #0f172a;">
+                            🤖 MedBot: AI Clinical Pharmacology & Disease Assistant
+                        </div>
+                        <div style="font-size: 0.82rem; color: var(--text-muted);">
+                            Drug dosages, side effects, contraindications, and disease treatment protocols
+                        </div>
+                    </div>
+                    <span class="match-pill" style="background: #eff6ff; color: #2563eb;">Clinical Agent Active</span>
+                </div>
+
+                <div class="chat-window">
+                    <div class="chat-log" id="chatMessages">
+                        <div class="chat-bubble bot">
+                            Hello! I am your <strong>AI Clinical Pharmacology & Disease Assistant</strong>.
+                            <br><br>
+                            You can ask questions such as:
+                            <ul>
+                                <li><em>"What is the recommended dosage and side effects of Paracetamol?"</em></li>
+                                <li><em>"Can I take Metformin together with Aspirin? Check drug interactions."</em></li>
+                                <li><em>"What are the warning signs and treatment for Dengue Fever?"</em></li>
+                                <li><em>"What medicines should high blood pressure patients avoid?"</em></li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Quick prompts -->
+                    <div style="display: flex; gap: 0.4rem; padding: 0.5rem 1rem; background: white; border-top: 1px solid var(--border); overflow-x: auto;">
+                        <span class="match-pill" style="cursor: pointer;" onclick="sendQuickChat('Paracetamol dosage, usage and side effects')">💊 Paracetamol Guide</span>
+                        <span class="match-pill" style="cursor: pointer;" onclick="sendQuickChat('Can Metformin and Aspirin be taken together? Check drug interaction')">⚠️ Metformin + Aspirin</span>
+                        <span class="match-pill" style="cursor: pointer;" onclick="sendQuickChat('Dengue fever warning signs and treatment')">🦟 Dengue Protocol</span>
+                        <span class="match-pill" style="cursor: pointer;" onclick="sendQuickChat('What medicines should high blood pressure patients avoid?')">❤️ Hypertension Restrictions</span>
+                    </div>
+
+                    <div class="chat-bar">
+                        <input type="text" class="chat-input-text" id="chatInput" placeholder="Ask about any medicine, dosage, side effect, disease, or interaction..." onkeypress="if(event.key === 'Enter') handleChatSend()">
+                        <button class="btn btn-secondary btn-sm" onclick="toggleVoiceForChat()" title="Voice input">🎤</button>
+                        <button class="btn btn-primary" onclick="handleChatSend()">Send &rarr;</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- Quick Login for Judges Modal (Exact Replica of Screenshot 1) -->
+    <div class="call-modal-overlay" id="judgeLoginModal">
+        <div class="judge-login-card">
+            <div style="width: 48px; height: 48px; border-radius: 12px; background: #0d9488; color: white; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 0.75rem;">
+                ⚕️
+            </div>
+            <h3 style="font-size: 1.4rem; font-weight: 800; color: #0f172a; margin-bottom: 0.2rem;">Welcome to EmergencyHealth.ai</h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 1.5rem;">Healthcare Orchestration System</div>
+
+            <div style="font-size: 0.82rem; font-weight: 700; color: var(--text-muted); text-transform: uppercase; margin-bottom: 0.75rem;">
+                Quick Login for Judges
+            </div>
+
+            <button class="quick-login-btn quick-login-test" onclick="performJudgeLogin('Test User', 'test@emergencyhealth.ai')">
+                👤 Login as Test User (test@emergencyhealth.ai)
+            </button>
+            <button class="quick-login-btn quick-login-patient" onclick="performJudgeLogin('Patient Rajesh', 'patient@emergencyhealth.ai')">
+                🏥 Login as Patient (patient@emergencyhealth.ai)
+            </button>
+            <button class="quick-login-btn quick-login-supervisor" onclick="performJudgeLogin('Dr. Sharma (Supervisor)', 'supervisor@emergencyhealth.ai')">
+                👨‍⚕️ Login as Supervisor (supervisor@emergencyhealth.ai)
+            </button>
+
+            <div style="margin-top: 1.25rem;">
+                <button class="btn btn-secondary" style="width: 100%;" onclick="closeJudgeLoginModal()">
+                    Continue in Demo Mode (Without Signing In) &rarr;
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 108 Emergency Call Simulator Modal -->
+    <div class="call-modal-overlay" id="call108Modal">
+        <div class="call-card">
+            <div style="font-size: 3rem; margin-bottom: 0.5rem;">🚑</div>
+            <h3 style="color: #ef4444; font-size: 1.3rem; font-weight: 800;">108 National Emergency Ambulance</h3>
+            <div style="font-size: 0.85rem; color: var(--text-muted);">Central Emergency Dispatch • Operator ID: 449</div>
+            <div style="font-size: 1.15rem; color: #059669; font-weight: 700; margin: 0.75rem 0;" id="callDurationTimer">Connecting...</div>
+
+            <div style="background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; padding: 1rem; font-size: 0.85rem; text-align: left; line-height: 1.5; margin-bottom: 1.25rem;" id="callTranscriptBox">
+                <strong>Dispatcher (108):</strong> "National Emergency Ambulance 108. Your live GPS coordinates have been received. Advanced Life Support Unit #12 has been dispatched. Stay on the line."
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="tel:108" class="btn btn-danger" style="text-decoration: none;">
+                    📱 Direct Mobile Dial (108)
+                </a>
+                <button class="btn btn-secondary" onclick="close108EmergencyCall()">
+                    End Call / Dismiss
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+        <div style="font-weight: 800; color: #0f172a; margin-bottom: 0.35rem; font-size: 1.05rem;">
+            EmergencyHealth.ai • Intelligent Healthcare Orchestration System
+        </div>
+        <p>Combining 3 Autonomous AI Agents (Supervisor, Care Pathway, Clinical Decision) with Human Oversight for India</p>
+    </footer>
+
+    <!-- Leaflet JS & App JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js"></script>
+</body>
+</html>

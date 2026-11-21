@@ -1,0 +1,5 @@
+# AI Emergency Health Assistant
+# Pure standard library - no external pip packages strictly required!
+# Optional packages for development and advanced NLP:
+# google-generativeai>=0.5.0
+# requests>=2.31.0
